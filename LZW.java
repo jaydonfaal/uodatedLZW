@@ -8,6 +8,7 @@ import java.io.ObjectOutputStream;
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
+// import org.apache.commons.io.IOUtils;
 
 
 
@@ -15,7 +16,7 @@ public class LZW
 {
   private ArrayList<Integer> compressedAscii;
   private HashMap<String, Integer> dictionary;
-  private HashMap<Integer, String> Invertedictionary;
+  // private HashMap<Integer, String> Invertedictionary;
   private String fileInAString;
   private ArrayList<String> inputFileInAnArrayList;
   private ArrayList<String> preDictionary;
@@ -25,23 +26,24 @@ public class LZW
   private ObjectInputStream is;
   private BufferedReader input;
   private ObjectOutputStream os;
+  private FileInputStream fis;
 
   public LZW() throws Exception
   {
     decodedFileUnicodeValues = new ArrayList<Integer>();
     dictionary = new HashMap<String, Integer>();
-    Invertedictionary = new HashMap<Integer, String>();
-    String fileName = "encoded.bin";
+    // Invertedictionary = new HashMap<Integer, String>();
+    String fileName = "encoded3.bin";
     FileOutputStream fileOs = new FileOutputStream(fileName);
     os = new ObjectOutputStream(fileOs);
     compressedAscii = new ArrayList<Integer>();
     inputFileInAnArrayList = new ArrayList<String>();
     preDictionary = new ArrayList<String>();
     update = new ArrayList<String>();
-    FileInputStream fileIS = new FileInputStream(fileName);
-    is = new ObjectInputStream(fileIS);
-    input = new BufferedReader(new FileReader("InputFile.txt"));
-    decodedFile = new BufferedWriter(new FileWriter("decoded.txt"));
+    fis = new FileInputStream(fileName);
+    is = new ObjectInputStream(fis);
+    input = new BufferedReader(new FileReader("lzw-file3.txt"));
+    // decodedFile = new BufferedWriter(new FileWriter("decoded2.txt"));
     fileInAString = "";
   }
 
@@ -92,8 +94,8 @@ public void convertFileStringToArrayDictionary()throws Exception
 
 public void dictionaryPopulators()
 {
-  int counter = 257;
-  for(int i = 0; i < 257; i++)
+  int counter = 256;
+  for(int i = 0; i < 256; i++)
   {
     char ascii = (char) i;
     dictionary.put(Character.toString(ascii), i);
@@ -104,16 +106,7 @@ public void dictionaryPopulators()
   }
   //inverted dictionary is dictionary with values and keys swapped places
 
-  counter = 257;
-  for(int i = 0; i < 257; i++)
-  {
-    char ascii = (char) i;
-  Invertedictionary.put(i, Character.toString(ascii));
-  }
-  for(int k = 0; k < preDictionary.size(); k++)
-  {
-    Invertedictionary.put(counter+k, preDictionary.get(k));
-  }
+  
 }
 
 
@@ -152,13 +145,41 @@ public void convertIntValuesToBinary()throws Exception
   }catch(IOException e){ }
   }
 
-  for(int i = 0; i < decodedFileUnicodeValues.size(); i++)
-  {
-    int temp = decodedFileUnicodeValues.get(i);
-    decodedFile.write(Invertedictionary.get(temp));
-  }
-  decodedFile.close();
 }
+
+// public void decode() throws Exception
+// {
+//   // int byteRead;
+//   // String decoded = "";
+//   // while ((byteRead = fis.read()) != -1);
+//   // {
+//   //   decoded += byteRead;
+//   // }
+//   // System.out.println(decoded);
+//   String body = IOUtils.toString(fis, StandardCharsets.UTF_8.name()); 
+
+// }
+
+// public void decode() throws Exception
+// {
+//   int counter = 256;
+//   for(int i = 0; i < 256; i++)
+//   {
+//     char ascii = (char) i;
+//   Invertedictionary.put(i, Character.toString(ascii));
+//   }
+//   for(int k = 0; k < preDictionary.size(); k++)
+//   {
+//     Invertedictionary.put(counter+k, preDictionary.get(k));
+//   }
+  
+//   for(int i = 0; i < decodedFileUnicodeValues.size(); i++)
+//   {
+//     int temp = decodedFileUnicodeValues.get(i);
+//     decodedFile.write(Invertedictionary.get(temp));
+//   }
+//   decodedFile.close();
+// }
 
 public void fileEncoder()throws Exception
 {
@@ -167,8 +188,9 @@ public void fileEncoder()throws Exception
   fileCompressor();
 }
 
- public static void main(String[] args)throws Exception
- {
-
- }
+public static void main(String[] args)throws Exception
+{
+  LZW thing = new LZW();
+  thing.fileEncoder();
+}
 }
